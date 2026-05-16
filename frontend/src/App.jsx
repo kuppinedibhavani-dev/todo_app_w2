@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import "./index.css";
 
 function App() {
@@ -25,61 +24,71 @@ function App() {
 
 
   // LOGIN
-  const login = async () => {
+ const login = async () => {
 
-    try {
+  try {
 
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/auth/login`,
-        {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/auth/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
           email,
           password
-        }
-      );
+        })
+      }
+    );
 
-      localStorage.setItem(
-        "token",
-        response.data.token
-      );
+    const data = await response.json();
 
-      setLoggedIn(true);
+    localStorage.setItem("token", data.token);
 
-    } catch (error) {
+    setLoggedIn(true);
 
-      console.log(error);
+  } catch (error) {
 
-      alert("Invalid credentials");
-    }
-  };
+    console.log(error);
+
+    alert("Invalid credentials");
+  }
+};
 
 
   // SIGNUP
-  const signup = async () => {
+ const signup = async () => {
 
-    try {
+  try {
 
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/auth/register`,
-        {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/auth/register`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
           email,
           password
-        }
-      );
+        })
+      }
+    );
 
-      alert(response.data.message);
+    const data = await response.json();
 
-      setIsSignup(false);
+    alert(data.message);
 
-    } catch (error) {
+    setIsSignup(false);
 
-      console.log(error);
+  } catch (error) {
 
-      alert(
-        error.response?.data?.message ||
-        "Signup failed"
-      );
-    }
-  };
+    console.log(error);
+
+    alert("Signup failed");
+  }
+};
   const token = localStorage.getItem("token");
 
 const config = {
@@ -90,23 +99,25 @@ const config = {
 
 
   // FETCH TODOS
-  const fetchTodos = async () => {
+ const fetchTodos = async () => {
 
-    try {
+  try {
 
-      const response = await axios.get(API, config);
+    const response = await fetch(API, config);
 
-      setTodos(response.data);
+    const data = await response.json();
 
-    } catch (error) {
+    setTodos(data);
 
-      console.log(error);
+  } catch (error) {
 
-    } finally {
+    console.log(error);
 
-      setLoading(false);
-    }
-  };
+  } finally {
+
+    setLoading(false);
+  }
+};
 
 
   useEffect(() => {
@@ -128,89 +139,109 @@ const config = {
 
 
   // ADD TODO
-  const addTodo = async () => {
+ const addTodo = async () => {
 
-    if (!text || !date || !time) {
-      return alert("Fill all fields");
-    }
+  if (!text || !date || !time) {
+    return alert("Fill all fields");
+  }
 
-    try {
+  try {
 
-      const response = await axios.post(API, {
+    const response = await fetch(API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
         text,
         date,
         time
-      }, config);
+      })
+    });
 
-      setTodos([...todos, response.data]);
+    const data = await response.json();
 
-      setText("");
-      setDate("");
-      setTime("");
+    setTodos([...todos, data]);
 
-    } catch (error) {
+    setText("");
+    setDate("");
+    setTime("");
 
-      console.log(error);
-    }
-  };
+  } catch (error) {
+
+    console.log(error);
+  }
+};
 
 
   // DELETE TODO
-  const deleteTodo = async (id) => {
+ const deleteTodo = async (id) => {
 
-    try {
+  try {
 
-      await axios.delete(`${API}/${id}`);
+    await fetch(`${API}/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
 
-      setTodos(
-        todos.filter(todo => todo._id !== id)
-      );
+    setTodos(
+      todos.filter(todo => todo._id !== id)
+    );
 
-    } catch (error) {
+  } catch (error) {
 
-      console.log(error);
-    }
-  };
+    console.log(error);
+  }
+};
 
 
   // EDIT TODO
-  const editTodo = async (id) => {
+ const editTodo = async (id) => {
 
-    if (!text || !date || !time) {
-      return alert("Fill all fields");
-    }
+  if (!text || !date || !time) {
+    return alert("Fill all fields");
+  }
 
-    try {
+  try {
 
-      const response = await axios.put(
-        `${API}/${id}`,
-        {
+    const response = await fetch(
+      `${API}/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
           text,
           date,
           time
-        }
-        , config
-      );
+        })
+      }
+    );
 
-      setTodos(
-        todos.map(todo =>
-          todo._id === id
-            ? response.data
-            : todo
-        )
-      );
+    const data = await response.json();
 
-      setEditingId(null);
+    setTodos(
+      todos.map(todo =>
+        todo._id === id ? data : todo
+      )
+    );
 
-      setText("");
-      setDate("");
-      setTime("");
+    setEditingId(null);
 
-    } catch (error) {
+    setText("");
+    setDate("");
+    setTime("");
 
-      console.log(error);
-    }
-  };
+  } catch (error) {
+
+    console.log(error);
+  }
+};
 
 
   // LOGOUT
