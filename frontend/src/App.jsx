@@ -21,7 +21,7 @@ function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const API = "http://localhost:3000/todos";
+  const API = "https://todo-app-w2.onrender.com/api/todos";
 
 
   // LOGIN
@@ -30,7 +30,7 @@ function App() {
     try {
 
       const response = await axios.post(
-        "http://localhost:3000/auth/login",
+        "https://todo-app-w2.onrender.com/api/auth/login",
         {
           email,
           password
@@ -59,7 +59,7 @@ function App() {
     try {
 
       const response = await axios.post(
-        "http://localhost:3000/auth/register",
+        "https://todo-app-w2.onrender.com/api/auth/register",
         {
           email,
           password
