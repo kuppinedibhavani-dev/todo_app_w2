@@ -21,7 +21,7 @@ function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const API = "https://todo-app-w2.onrender.com/api/todos";
+  const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api/todos";
 
 
   // LOGIN
@@ -30,7 +30,7 @@ function App() {
     try {
 
       const response = await axios.post(
-        "https://todo-app-w2.onrender.com/api/auth/login",
+        `${import.meta.env.VITE_API_URL}/api/auth/login`,
         {
           email,
           password
@@ -59,7 +59,7 @@ function App() {
     try {
 
       const response = await axios.post(
-        "https://todo-app-w2.onrender.com/api/auth/register",
+        `${import.meta.env.VITE_API_URL}/api/auth/register`,
         {
           email,
           password
